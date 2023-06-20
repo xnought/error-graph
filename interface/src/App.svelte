@@ -177,10 +177,7 @@
 					if (t.correct) continue;
 					source["radius"] += 1;
 				}
-				source["radius"] = Math.max(
-					-20 * Math.log((1 / 20) * source["radius"]),
-					r
-				);
+				source["radius"] = Math.min(Math.max(source["radius"], r), 7);
 
 				// go from source to all targets found in topK
 				for (const target of topK) {
