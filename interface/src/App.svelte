@@ -3,8 +3,8 @@
 	import { onMount } from "svelte";
 
 	let svgEl, svg, sim;
-	export let width = 900;
-	export let height = 900;
+	export let width = 1600;
+	export let height = 1000;
 
 	export let nodes = [
 		{ id: "a", group: 1 },
@@ -25,12 +25,22 @@
 		const data = await fetch(`${filename}`);
 		const json = await data.json();
 		json.splice(limit);
+		const xScale = (x) =>
+			d3
+				.scaleLinear()
+				.domain(d3.extent(nodes, (d) => d.x))
+				.range([0, width]);
+		const yScale = (y) =>
+			d3
+				.scaleLinear()
+				.domain(d3.extent(nodes, (d) => d.y))
+				.range([0, height]);
 
 		// put it in format so I have ID and group
 		// TODO add groups
 		for (let i = 0; i < json.length; i++) {
 			const item = json[i];
-			json[i] = { ...json[i], cx: item.x, cy: item.y };
+			json[i] = { ...json[i], cx: xScale(item.x), cy: yScale(item.y) };
 		}
 		return json;
 	}
@@ -57,7 +67,7 @@
 		const link = svg
 			.append("g")
 			.attr("stroke", "#999")
-			.attr("stroke-opacity", 0.6)
+			.attr("stroke-opacity", 0.1)
 			.selectAll("line")
 			.data(links)
 			.join("line")
@@ -190,8 +200,8 @@
 	}
 
 	onMount(async () => {
-		const data = await fileToNodes(filename, 200);
-		const { nodes, links } = wrong(data);
+		const data = await fileToNodes(filename);
+		const { nodes, links } = wrong(data, 20);
 		svg = d3.select(svgEl);
 		graph(svg, nodes, links);
 	});
@@ -202,13 +212,15 @@
 		bind:this={svgEl}
 		{width}
 		{height}
-		viewBox="{-width / 2} {-height / 2} {width} {height}"
+		viewBox="{(-width * 2.5) / 2} {(-height * 2.5) / 2} {width *
+			2.5} {height * 2.5}"
 	/>
 </div>
 
 <style>
 	svg {
-		outline: red 1px solid;
+		/* outline: red 1px solid; */
 		overflow: visible;
+		margin: 25px;
 	}
 </style>
