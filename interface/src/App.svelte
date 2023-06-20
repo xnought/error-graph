@@ -19,6 +19,17 @@
 		{ source: "e", target: "d", value: 1 },
 		{ source: "c", target: "a", value: 4 },
 	];
+	export let filename = "imagenette.json";
+
+	async function fileToNodes(filename, limit = Infinity) {
+		const data = await fetch(`${filename}`);
+		const json = await data.json();
+		json.splice(limit);
+
+		// put it in format so I have ID and group
+		// TODO add groups
+		return json;
+	}
 
 	function graph(svg, nodes, links) {
 		sim = d3
@@ -75,9 +86,27 @@
 		update();
 	}
 
-	onMount(() => {
-		svg = d3.select(svgEl);
-		graph(svg, nodes, links);
+	/**
+	 * In the exact order of the array, connect em!
+	 * @param {{id: string, x: number, y: number}[]} data
+	 */
+	function inOrder(data) {
+		let links = [];
+		for (let i = 1; i < data.length - 1; i++) {
+			const node = data[i];
+			const source = data[i - 1];
+			const target = node;
+			links.push({ source: source.id, target: target.id });
+		}
+		return { nodes: data, links: links };
+	}
+
+	onMount(async () => {
+		const data = await fileToNodes(filename, 100);
+		const { nodes, links } = inOrder(data);
+		console.log(nodes, links);
+		// svg = d3.select(svgEl);
+		// graph(svg, nodes, links);
 	});
 </script>
 
