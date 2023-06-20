@@ -2,8 +2,8 @@
 
 Data -> Model Embeddings -> 2D -> Error Connections -> Force Graph Visualization
 
-![Screenshot 2023-06-20 at 6 58 46 PM](https://github.com/xnought/error-graph/assets/65095341/6a6d4cad-0c6a-4c88-9c4a-40c5112c33dc)
 
+<img width="75%" alt="Screenshot 2023-06-20 at 7 09 42 PM" src="https://github.com/xnought/error-graph/assets/65095341/e520e43f-38b4-43fc-a96b-40e19c642b52">
 
 
 
