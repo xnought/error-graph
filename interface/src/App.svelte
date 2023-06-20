@@ -6,6 +6,7 @@
 	export let width = 1600;
 	export let height = 1000;
 
+	export let r = 5;
 	export let nodes = [
 		{ id: "a", group: 1 },
 		{ id: "b", group: 1 },
@@ -40,7 +41,10 @@
 		// TODO add groups
 		for (let i = 0; i < json.length; i++) {
 			const item = json[i];
-			json[i] = { ...json[i], cx: xScale(item.x), cy: yScale(item.y) };
+			json[i] = {
+				...json[i],
+				radius: r,
+			};
 		}
 		return json;
 	}
@@ -80,7 +84,7 @@
 			.selectAll("circle")
 			.data(nodes)
 			.join("circle")
-			.attr("r", 5)
+			.attr("r", (d) => d.radius)
 			.attr("fill", (d) => (d.correct ? "steelblue" : "red"));
 
 		function update() {
@@ -167,6 +171,17 @@
 				const topK = data
 					.sort((a, b) => a["distance"] - b["distance"])
 					.slice(0, k);
+
+				source["radius"] = r + 1;
+				for (const t of topK) {
+					if (t.correct) continue;
+					source["radius"] += 1;
+				}
+				source["radius"] = Math.max(
+					-20 * Math.log((1 / 20) * source["radius"]),
+					r
+				);
+
 				// go from source to all targets found in topK
 				for (const target of topK) {
 					links.push({
@@ -200,7 +215,7 @@
 	}
 
 	onMount(async () => {
-		const data = await fileToNodes(filename);
+		const data = await fileToNodes(filename, 3000);
 		const { nodes, links } = wrong(data, 20);
 		svg = d3.select(svgEl);
 		graph(svg, nodes, links);
